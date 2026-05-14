@@ -1,0 +1,148 @@
+# =============================================================================
+# PixelFlow — Distributed Image Processing Pipeline
+# .gitignore
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Project Data — never commit image files or processed outputs
+# -----------------------------------------------------------------------------
+data/
+logs/
+*.log
+
+# -----------------------------------------------------------------------------
+# Environment Variables — never commit secrets
+# -----------------------------------------------------------------------------
+.env
+.env.local
+.env.production
+.env.staging
+# Keep the template
+!.env.example
+
+# -----------------------------------------------------------------------------
+# Python — Backend
+# -----------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+*.egg
+.eggs/
+
+# Testing & coverage
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+.tox/
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+
+# Ruff / linting cache
+.ruff_cache/
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# -----------------------------------------------------------------------------
+# Node.js — Frontend
+# -----------------------------------------------------------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Next.js
+frontend/.next/
+frontend/out/
+frontend/.vercel/
+
+# Build output
+frontend/dist/
+frontend/build/
+
+# Next.js cache
+frontend/.next/cache/
+
+# TypeScript
+*.tsbuildinfo
+frontend/next-env.d.ts
+
+# Testing
+frontend/coverage/
+frontend/.nyc_output/
+
+# -----------------------------------------------------------------------------
+# Docker
+# -----------------------------------------------------------------------------
+# Don't ignore docker-compose.yml — that's source code
+# But ignore any override files with local secrets
+docker-compose.override.yml
+docker-compose.local.yml
+
+# -----------------------------------------------------------------------------
+# IDEs & Editors
+# -----------------------------------------------------------------------------
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+
+.idea/
+*.iml
+*.iws
+*.ipr
+
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# JetBrains
+.fleet/
+
+# -----------------------------------------------------------------------------
+# OS
+# -----------------------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Desktop.ini
+
+# -----------------------------------------------------------------------------
+# Misc
+# -----------------------------------------------------------------------------
+*.zip
+*.tar.gz
+*.rar
+
+# Local scripts you don't want to share
+scratch/
+playground/
+tmp/
+temp/
+
+
+# docs
+docs/
