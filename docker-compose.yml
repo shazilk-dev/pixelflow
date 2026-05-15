@@ -1,0 +1,99 @@
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - pipeline
+
+  api:
+    build: ./backend
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - UPLOAD_DIR=/app/data/uploads
+      - OUTPUT_DIR=/app/data/outputs
+    volumes:
+      - shared_data:/app/data
+      - ./backend:/app
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - pipeline
+
+  worker_1:
+    build: ./backend
+    command: celery -A celery_app worker --loglevel=info --concurrency=1 -n worker_1@%h
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - UPLOAD_DIR=/app/data/uploads
+      - OUTPUT_DIR=/app/data/outputs
+      - WORKER_ID=worker_1
+    volumes:
+      - shared_data:/app/data
+      - ./backend:/app
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - pipeline
+
+  worker_2:
+    build: ./backend
+    command: celery -A celery_app worker --loglevel=info --concurrency=1 -n worker_2@%h
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - UPLOAD_DIR=/app/data/uploads
+      - OUTPUT_DIR=/app/data/outputs
+      - WORKER_ID=worker_2
+    volumes:
+      - shared_data:/app/data
+      - ./backend:/app
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - pipeline
+
+  worker_3:
+    build: ./backend
+    command: celery -A celery_app worker --loglevel=info --concurrency=1 -n worker_3@%h
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - UPLOAD_DIR=/app/data/uploads
+      - OUTPUT_DIR=/app/data/outputs
+      - WORKER_ID=worker_3
+    volumes:
+      - shared_data:/app/data
+      - ./backend:/app
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - pipeline
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      - api
+    networks:
+      - pipeline
+
+volumes:
+  shared_data:
+
+networks:
+  pipeline:
+    driver: bridge
