@@ -104,13 +104,37 @@ def set_worker_status(worker_id: str, data: dict, *, redis_url: str | None = Non
     rc.expire(key, _WORKER_TTL)
 
 
+def register_worker(worker_id: str, *, redis_url: str | None = None) -> None:
+    rc = _get_client(redis_url)
+    rc.sadd("workers:registry", worker_id)
+
+
 def get_all_worker_statuses(*, redis_url: str | None = None) -> list[dict]:
     rc = _get_client(redis_url)
+    known = rc.smembers("workers:registry")
+    if not known:
+        # Fallback: scan for any live keys (e.g. before registry is populated)
+        for key in rc.scan_iter("worker:*:status"):
+            data = rc.hgetall(key)
+            if data:
+                known.add(data.get("worker_id", ""))
+
     statuses = []
-    for key in rc.scan_iter("worker:*:status"):
-        data = rc.hgetall(key)
+    for worker_id in sorted(known):
+        if not worker_id:
+            continue
+        data = rc.hgetall(f"worker:{worker_id}:status")
         if data:
             statuses.append(data)
+        else:
+            statuses.append({
+                "worker_id": worker_id,
+                "status": "OFFLINE",
+                "current_filename": "",
+                "tasks_completed": 0,
+                "tasks_failed": 0,
+                "last_heartbeat": "",
+            })
     return statuses
 
 

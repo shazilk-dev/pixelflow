@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(.venv/Scripts/python -c \"from services.job_service import create_batch; print\\('Import OK'\\)\")",
+      "Bash(cd *)",
+      "Bash(.venv/Scripts/pytest *)"
+    ]
+  }
+}

@@ -71,9 +71,9 @@ class TestBatchMetaInitialState:
         import os
         os.environ["REDIS_URL"] = TEST_REDIS_URL
 
-        from services.job_service import create_batch  # noqa: PLC0415
+        from services.job_service import init_batch_record  # noqa: PLC0415
 
-        batch_id, total = create_batch(
+        batch_id, total = init_batch_record(
             filenames=["a.jpg", "b.jpg", "c.jpg", "d.jpg", "e.jpg"],
             transformations=["resize", "grayscale"],
             redis_url=TEST_REDIS_URL,

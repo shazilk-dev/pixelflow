@@ -462,6 +462,9 @@ def boot_worker_threads(worker_id: str) -> None:
     Worker ID is always read from env — never parsed from hostname or sys.argv.
     Called via the Celery worker_init signal so threads start before any task is consumed.
     """
+    from core.redis_client import register_worker  # noqa: PLC0415
+    register_worker(worker_id)
+
     threading.Thread(
         target=heartbeat_loop,
         args=(worker_id,),
