@@ -342,6 +342,16 @@ def process_image(
         "current_batch_id": batch_id,
     })
 
+    # Push immediately — don't wait for the 2s heartbeat (tasks often finish faster).
+    push_stream_event(batch_id, {
+        "event": "worker_status",
+        "worker_id": WORKER_ID,
+        "status": "PROCESSING",
+        "current_filename": filename,
+        "tasks_completed": _worker_state["tasks_completed"],
+        "tasks_failed": _worker_state["tasks_failed"],
+    })
+
     try:
         upload_path = os.path.join(settings.UPLOAD_DIR, batch_id, filename)
         output_dir = os.path.join(settings.OUTPUT_DIR, batch_id)
@@ -362,6 +372,15 @@ def process_image(
             "current_task_id": "",
             "current_filename": "",
             "current_batch_id": "",
+        })
+
+        push_stream_event(batch_id, {
+            "event": "worker_status",
+            "worker_id": WORKER_ID,
+            "status": "IDLE",
+            "current_filename": "",
+            "tasks_completed": _worker_state["tasks_completed"],
+            "tasks_failed": _worker_state["tasks_failed"],
         })
 
         _check_and_emit_batch_complete(batch_id)
@@ -385,6 +404,16 @@ def process_image(
                 "current_filename": "",
                 "current_batch_id": "",
             })
+
+            push_stream_event(batch_id, {
+                "event": "worker_status",
+                "worker_id": WORKER_ID,
+                "status": "IDLE",
+                "current_filename": "",
+                "tasks_completed": _worker_state["tasks_completed"],
+                "tasks_failed": _worker_state["tasks_failed"],
+            })
+
             _check_and_emit_batch_complete(batch_id)
             logger.error("task FAILED (max retries exhausted)", extra={"task_id": task_id})
             return {"task_id": task_id, "status": "FAILED"}
