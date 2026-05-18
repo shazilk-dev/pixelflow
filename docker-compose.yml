@@ -80,12 +80,33 @@ services:
     networks:
       - pipeline
 
+  # Generic scalable worker — no fixed WORKER_ID.
+  # Scale for the scalability demo: docker compose up --scale worker=5 -d
+  # These workers process tasks from the queue but do not appear on the monitoring
+  # dashboard (no WORKER_ID → no heartbeat key → not scanned by /api/workers/status).
+  worker:
+    build: ./backend
+    command: celery -A celery_app worker --loglevel=info --concurrency=1
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - UPLOAD_DIR=/app/data/uploads
+      - OUTPUT_DIR=/app/data/outputs
+    volumes:
+      - shared_data:/app/data
+      - ./backend:/app
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - pipeline
+
   frontend:
     build: ./frontend
     ports:
-      - "3000:3000"
+      - "3400:3000"
     environment:
       - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - API_INTERNAL_URL=http://api:8000
     depends_on:
       - api
     networks:

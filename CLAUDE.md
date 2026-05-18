@@ -191,7 +191,7 @@ worker_3:
 2. Dashboard: 3 worker cards pulsing simultaneously → **parallelism**
 3. Click "Kill Worker 2" mid-job → task reassigned to Worker 1 → **fault tolerance**
 4. Results page: speedup chart + before/after gallery → **performance proof**
-5. Terminal: `docker-compose up --scale worker=5` → **scalability**
+5. Terminal: `docker compose --profile scaling up --scale worker=5` → **scalability**
 
 ### Kill Worker — Implementation Detail (IMPORTANT)
 
